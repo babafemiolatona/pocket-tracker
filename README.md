@@ -100,7 +100,8 @@ Add additional notes about how to deploy this on a live system.
 
 ## ✍️ Authors <a name = "authors"></a>
 
-- [@bolexs](https://github.com/bolexs) 
+- [@bolexs](https://github.com/bolexs)
+- [@babafemiolatona](https://github.com/babafemiolatona)
 
 
 ## 🎉 Acknowledgements <a name = "acknowledgement"></a>
