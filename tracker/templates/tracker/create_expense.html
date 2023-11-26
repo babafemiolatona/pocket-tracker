@@ -1,0 +1,58 @@
+{% extends 'tracker/base.html' %} {% block content %}
+
+<div class="container mt-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a href="{% url 'tracker:expenses'%}">Expenses</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">Add Expenses</li>
+    </ol>
+  </nav>
+
+  <div class="card">
+    <div class="card-body">
+      <form action="{% url 'tracker:add_expense' %}" method="post">
+        {% include 'partials/_messages.html'%} {% csrf_token %}
+        <div class="form-group">
+          <label for="">Amount</label>
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            name="amount"
+            value="{{values.amount}}"
+          />
+        </div>
+        <div class="form-group">
+          <label for="">Description</label>
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            name="description"
+            value="{{values.description}}"
+          />
+        </div>
+          <div class="form-group">
+            <label for="category">Category</label>
+            <input type="text" class="form-control" name="category" id="category">
+          </div>
+        <div class="form-group">
+          <label for="">Date of Expense</label>
+          <input
+            type="date"
+            class="form-control form-control-sm"
+            name="expense_date"
+          />
+        </div>
+
+        <input
+          type="submit"
+          value="Add Expense"
+          class="btn btn-primary btn-primary-sm"
+        />
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
