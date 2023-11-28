@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 
 class ExpenseListView(ListView):
     model = Expense
-    template_name = 'tracker/index.html'
+    template_name = 'web_static/index.html'
     context_object_name = 'expenses'
     paginate_by = 5
 
@@ -25,7 +25,7 @@ class ExpenseListView(ListView):
         return context
 
 class CreateExpenseView(View):
-    template_name = 'tracker/create_expense.html'
+    template_name = 'web_static/create_expense.html'
 
     def get(self, request):
         categories = Category.objects.all()
@@ -88,4 +88,4 @@ def expense_edit(request, id):
         'categories': categories
     }
 
-    return render(request, 'tracker/edit-expense.html', context)
+    return render(request, 'web_static/edit-expense.html', context)
