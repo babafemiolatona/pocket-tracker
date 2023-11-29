@@ -1,0 +1,38 @@
+#!/bin/bash
+
+set -o errexit
+
+set -o pipefail
+
+set -o nounset
+
+postgres_ready() {
+python << END
+import os
+import sys
+
+import psycopg2
+
+try:
+    psycopg2.connect(
+        user=os.getenv("POSTGRES_USER"),
+        password=os.getenv("POSTGRES_PASSWORD"),
+        host=os.getenv("POSTGRES_HOST"),
+        port=os.getenv("POSTGRES_PORT"),
+        dbname=os.getenv("POSTGRES_DB"),
+    )
+except psycopg2.OperationalError as e:
+    print(e)
+    sys.exit(-1)
+sys.exit(0)
+
+END
+}
+until postgres_ready; do
+    echo "sd"
+  >&2 echo 'Waiting for PostgreSQL to become available...'
+  sleep 1
+done
+>&2 echo 'PostgreSQL is available'
+
+exec "$@"

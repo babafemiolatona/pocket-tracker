@@ -1,0 +1,33 @@
+version: '3.7'
+
+
+services:
+  db:
+    image: postgres
+    volumes: 
+      - postgres_data:/var/lib/postgresql/data/
+    env_file: .env
+    container_name: pocketracker_db
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: >
+      sh -c "python manage.py makemigrations &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8001
+             "
+    ports:
+      - "8003:8002"
+    env_file: .env
+    restart: always
+    volumes: 
+      - .:/usr/src/app
+    container_name: pocketracker_be
+    depends_on: 
+      - db
+
+
+
+volumes:
+  postgres_data:
