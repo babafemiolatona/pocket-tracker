@@ -10,21 +10,29 @@
             <a href="{% url 'tracker:expenses'%}">Expenses</a>
           </li>
           <li class="breadcrumb-item active" aria-current="page">
-            Create Expense
+            Edit Expense
           </li>
         </ol>
       </nav>
     </div>
+
+    <div class="col-md-2">
+      <a
+        href="{% url 'tracker:expense-delete' expense.id %}"
+        class="btn btn-danger btn-sm"
+        >Delete</a>
+    </div>
   </div>
+
   <div class="card">
     <div class="card-body">
-      <form action="{% url 'tracker:create-expense' %}" method="post" class="form">
+      <form action="{% url 'tracker:expense-edit' expense.id %}" method="post" class="form">
         {% csrf_token %}
         {% bootstrap_form form %}
         {% buttons %}
         <input
           type="submit"
-          value="Save"
+          value="Update"
           class="btn btn-primary btn-primary-sm"/>
         {% endbuttons %}
       </form>

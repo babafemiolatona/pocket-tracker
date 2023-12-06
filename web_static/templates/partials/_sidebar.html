@@ -29,9 +29,8 @@
     </h6>
     <ul class="nav flex-column mb-2">
       <li class="nav-item">
-        <a class="nav-link" href="#">
-          <span data-feather="file-text"></span>
-          Income Summary
+        <a class="nav-link" href="{% url 'tracker:stats'%}">
+          Expenses Summary
         </a>
       </li>
     </ul>
@@ -48,10 +47,16 @@
         <span data-feather="plus-circle"></span>
       </a>
     </h6>
+    <ul class="nav flex-column mb-2">
       <li class="nav-item">
-        <a class="nav-link" href="#">
+        <a class="nav-link" href="{% url 'tracker:preference' %}">
+          General
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'users:profile' %}">
           <span data-feather="file-text"></span>
-          Account
+          Profile
         </a>
       </li>
     </ul>

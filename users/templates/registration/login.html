@@ -1,18 +1,22 @@
-{% extends "tracker/base.html" %}
-{% load bootstrap4 %}
-{% block page_header %}
- <h2>Log in to PocketTracker</h2>
-{% endblock page_header %}
+{% extends 'web_static/base.html' %}
+{% load crispy_forms_tags %}
+
 {% block content %}
- <form method="post" action="{% url 'users:login' %}" class="form">
- {% csrf_token %}
- {% bootstrap_form form %}
- {% buttons %}
- <button name="submit" class="btn btn-primary">Log in</button>
- {% endbuttons %}
- 
- <input type="hidden" name="next"
- value="{% url 'tracker:expenses' %}" />
- </form>
- 
-{% endblock content %}
+    <div class="content-section">
+        <form method="POST">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Log In</legend>
+                {{ form|crispy }}
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">Login</button>
+            </div>
+        </form>
+        <div class="border-top pt-3">
+            <small class="text-muted">
+                Need An Account? <a class="ml-2" href="{% url 'users:register' %}">Sign Up Now</a>
+            </small>
+        </div>
+    </div>
+{% endblock %}

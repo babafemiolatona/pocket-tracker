@@ -4,13 +4,13 @@ from .models import Expense
 class ExpenseForm(forms.ModelForm):
     class Meta:
         model = Expense
-        fields = ['description', 'amount']
-        
-#     description = forms.CharField(max_length=100)
-#     amount = forms.IntegerField()
-#     category = forms.CharField(max_length=100)
+        fields = ['amount', 'description', 'category', 'date_of_expense']
+        widgets = {
+            'description': forms.TextInput(attrs={'class': 'form-control'}),
+            'amount': forms.TextInput(attrs={'class': 'form-control'}), 
+            'category': forms.Select(attrs={'class': 'form-control'}),
+            'date_of_expense': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        }
 
-#     widget = {
-#        'title': forms.TextInput(attrs={'class': 'input-group form-control form-control-lg'}),
-#        'amount': forms.TextInput(attrs={'class': 'input-group form-control form-control-lg'}), 
-#    }
+    category = forms.ChoiceField(choices=Expense.CATEGORY,
+                                 widget=forms.Select(attrs={'class': 'form-control'}))

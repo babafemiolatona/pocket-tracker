@@ -1,5 +1,10 @@
-{% extends "tracker/base.html" %}
+{% extends 'web_static/base.html' %}
 
 {% block content %}
-    <p>You have been logged out. Thank you for visiting!</p>
-{% endblock content %}
+        <h2>You have been logged out</h2>
+        <div class="border-top pt-3">
+            <small class="text-muted">
+                <a href="{% url 'users:login' %}">Log In Again</a>
+            </small>
+        </div>
+{% endblock %}

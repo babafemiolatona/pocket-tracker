@@ -2,7 +2,6 @@
 {% load static %}
 
 
-
 {% block content %}
 <div class="container mt-4">
   <div class="row">
@@ -18,9 +17,8 @@
         </ol>
       </nav>
     </div>
-
     <div class="col-md-2">
-      <a href="{% url 'tracker:add_expense'%}" class="btn btn-primary">Add Expense</a>
+      <a href="{% url 'tracker:create-expense'%}" class="btn btn-primary">Add Expense</a>
     </div>
   </div>
 
@@ -44,7 +42,7 @@
         <th>Amount ({{currency}})</th>
         <th>Category</th>
         <th>Description</th>
-        <th>Date</th>
+        <th>Date of Expense</th>
         <th></th>
       </tr>
     </thead>
@@ -55,13 +53,19 @@
         <td>{{expense.amount}}</td>
         <td>{{expense.category}}</td>
         <td>{{expense.description}}</td>
-        <td>{{expense.date}}</td>
+        <td>{{expense.date_of_expense}}</td>
 
         <td>
           <a
             href="{% url 'tracker:expense-edit' expense.id  %}"
             class="btn btn-secondary btn-sm"
             >Edit</a>
+        </td>
+        <td>
+          <a
+            href="{% url 'tracker:expense-delete' expense.id %}"
+            class="btn btn-danger btn-sm"
+            >Delete</a>
         </td>
       </tr>
 
@@ -71,29 +75,21 @@
 </div>
 
 <p class="no-results" style="display: none;">No results </p>
-    <div class="table-output">
-
-
-      <table class="table table-stripped table-hover">
-        <thead>
-          <tr>
-            <th>Amount ({{currency}})</th>
-            <th>Category</th>
-            <th>Description</th>
-            <th>Date</th>
-            <th></th>
-          </tr>
-        </thead>
-
-        <tbody  class="table-body">
-
-
+      <div class="table-output">
+        <table class="table table-stripped table-hover">
+          <thead>
+            <tr>
+              <th>Amount ({{ currency }})</th>
+              <th>Category</th>
+              <th>Description</th>
+              <th>Date</th>
+              <th></th>
+            </tr>
+          </thead>
+        <tbody class="table-body">
         </tbody>
       </table>
     </div>
-
-
-
 
     <div class="pagination-container">
     <div class="">
@@ -117,7 +113,7 @@
 </div>
 </div>
 
-<script src="{% static 'js/searchExpenses.js' %}"></script>
+<script src="{% static 'static/scripts/searchExpenses.js' %}"></script>
 
 
 

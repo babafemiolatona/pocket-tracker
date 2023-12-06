@@ -1,53 +1,72 @@
-{% load bootstrap4 %}
-<!doctype html>
+{% load static %}
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1,
-shrink-to-fit=no">
-<title>PocketTracker</title>
-{% bootstrap_css %}
-{% bootstrap_javascript jquery='full' %}
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{% static 'static/styles/main.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom styles for this template -->
+    <link href="{% static 'static/styles/dashboard.css' %}" rel="stylesheet" />
+
+    {% if title %}
+        <title>PocketTracker - {{ title }}</title>
+    {% else %}
+        <title>PocketTracker</title>
+    {% endif %}
 </head>
 <body>
-    <nav class="navbar navbar-expand-md navbar-light bg-black mb-4 border">
-    <a class="navbar-brand" href="{% url 'tracker:expenses'%}">
-    PocketTracker</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse"
-    data-target="#navbarCollapse" aria-controls="navbarCollapse"
-    aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span></button>
-    <div class="collapse navbar-collapse" id="navbarCollapse">
-        <ul class="navbar-nav mr-auto">
-         <li class="nav-item">
-          <a class="nav-link" href="{% url 'tracker:expenses'%}">
-          Expenses</a></li>
-          </ul>
-    <ul class="navbar-nav ml-auto">
- {% if user.is_authenticated %}
- <li class="nav-item">
- <span class="navbar-text"}">Hello, {{ user.username }}.</span>
- </li>
- <li class="nav-item">
- <a class="nav-link" href="{% url 'users:logout' %}">Log out</a>
- </li>
- {% else %}
- <li class="nav-item">
- <a class="nav-link" href="{% url 'users:register' %}">Register</a>
- </li>
- <li class="nav-item">
- <a class="nav-link" href="{% url 'users:login' %}">Log in</a></li>
- {% endif %}
- </ul>
- </div>
- </nav>
- <main role="main" class="container">
-     <div class="pb-2 mb-2 border-bottom">
-     {% block page_header %}{% endblock page_header %}
-     </div>
-     <div>
-     {% block content %}{% endblock content %}
-     </div>
-     </main>
-    </body>
-    </html>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4 fixed-top">
+        <a class="navbar-brand" href="{% url 'tracker:expenses' %}">PocketTracker</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse"
+                data-target="#navbarCollapse" aria-controls="navbarCollapse"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav ml-auto">
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <span class="navbar-text">Hello, {{ user.username }}.</span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'users:logout' %}">Log out</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'users:register' %}">Register</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'users:login' %}">Log in</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+    <div class="container-fluid">
+        <div class="row">
+            {% if user.is_authenticated %}
+                {% include 'partials/_sidebar.html' %}
+            {% endif %}
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4" style="padding-top: 55px;">
+                <div class="pb-2 mb-2 border-bottom">
+                    {% block page_header %}{% endblock page_header %}
+                </div>
+                <div>
+                    {% block content %}{% endblock content %}
+                </div>
+            </main>
+        </div>
+    </div>
+    <!-- Bootstrap JS and other scripts go here -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-Q6E9a0EIjsqJzY4h7iRTlW2TgLEf5t+dnWqZl+/h3dfJ9ISBeg/Lz9DUJnAznJmZ" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.9.0/feather.min.js"></script>
+    <script src="{% static 'static/scripts/main.js' %}"></script>
+</body>
+</html>

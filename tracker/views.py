@@ -1,91 +1,154 @@
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib import messages
-from .models import Category, Expense
-from django.views.generic import ListView
+from .models import Category, Expense, UserPreference
+from django.views.generic import ListView, UpdateView, DeleteView, CreateView
 from django.core.paginator import Paginator
 from .forms import ExpenseForm
 from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
+import json
+from django.http import JsonResponse
+from datetime import date, timedelta
+from django.conf import settings
+import os
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-class ExpenseListView(ListView):
+
+class ExpenseListView(LoginRequiredMixin, ListView):
     model = Expense
     template_name = 'web_static/index.html'
     context_object_name = 'expenses'
     paginate_by = 5
+    login_url = 'users:login'
 
     def get_queryset(self):
-        return Expense.objects.filter(user=self.request.user)
+        if self.request.user.is_authenticated:
+            return Expense.objects.filter(user=self.request.user).order_by('-date_of_expense')
+        else:
+            return Expense.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         page_number = self.request.GET.get('page')
         paginator = Paginator(self.get_queryset(), self.paginate_by)
-        page_obj = Paginator.get_page(paginator, page_number)
+        page_obj = paginator.get_page(page_number)
+
+        if self.request.user.is_authenticated:
+            try:
+                currency = UserPreference.objects.get(user=self.request.user).currency
+            except UserPreference.DoesNotExist:
+                currency = None
+        else:
+            currency = None
+
         context['page_obj'] = page_obj
+        context['currency'] = currency
         return context
 
-class CreateExpenseView(View):
+class CreateExpenseView(LoginRequiredMixin, CreateView):
+    model = Expense
     template_name = 'web_static/create_expense.html'
+    form_class = ExpenseForm
+    success_url = reverse_lazy('tracker:expenses')
+    login_url = 'users:login'
 
-    def get(self, request):
-        categories = Category.objects.all()
-        context = {
-            'categories': categories,
-            'values': request.POST
-        }
-        return render(request, self.template_name, context)
+    def form_valid(self, form):
+        expense = form.save(commit=False)
+        expense.user = self.request.user
+        expense.save()
+        messages.success(self.request, 'Expense saved successfully.')
+        return super().form_valid(form)
 
-    def post(self, request):
-        categories = Category.objects.all()
-        context = {
-            'categories': categories,
-            'values': request.POST
-        }
+class ExpenseUpdateView(LoginRequiredMixin, UpdateView):
+    model = Expense
+    form_class = ExpenseForm
+    template_name = 'web_static/edit_expense.html'
+    login_url = 'users:login'
 
-        amount = request.POST.get('amount')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = ExpenseForm(instance=self.object)
+        return context
 
-        if not amount:
-            messages.error(request, 'Amount is required')
-            return render(request, self.template_name, context)
+    def get_success_url(self):
+        return reverse_lazy('tracker:expenses')
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'Expense updated successfully.')
+        return super().form_valid(form)
 
-        description = request.POST.get('description')
-        date = request.POST.get('expense_date')
-        category = request.POST.get('category')
+    
+class ExpenseDeleteView(LoginRequiredMixin, DeleteView):
+    model = Expense
+    template_name = 'web_static/expense_delete.html'
+    success_url = reverse_lazy('tracker:expenses')
+    login_url = 'users:login'
 
-        if not description:
-            messages.error(request, 'Description is required')
-            return render(request, self.template_name, context)
+    def form_valid(self, form):
+        messages.success(self.request, 'Expense deleted successfully.')
+        return super().form_valid(form)
+        
+def expense_category_summary(request):
+    todays_date = date.today()
+    one_month_ago = todays_date - timedelta(days=30)
+    
+    expenses = Expense.objects.filter(user=request.user,
+                                      date_of_expense__gte=one_month_ago, date_of_expense__lte=todays_date)
+    
+    finalrep = {}
 
-        Expense.objects.create(
-            user=request.user,
-            amount=amount,
-            date=date,
-            category=category,
-            description=description
-        )
+    def get_expense_category_amount(category):
+        filtered_by_category = expenses.filter(category=category)
+        return sum(item.amount for item in filtered_by_category)
 
-        messages.success(request, 'Expense saved successfully')
-        return redirect('tracker:expenses')
+    category_list = list(set(expense.category for expense in expenses))
 
-def expense_edit(request, id):
-    expense = get_object_or_404(Expense, pk=id)
-    categories = Category.objects.all()
+    for category in category_list:
+        finalrep[category] = get_expense_category_amount(category)
 
+    return JsonResponse({'expense_category_data': finalrep}, safe=False)
+
+
+def stats_view(request):
+    return render(request, 'web_static/stats.html')
+
+def search_expenses(request):
     if request.method == 'POST':
-        form = ExpenseForm(request.POST, instance=expense)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Expense updated successfully')
-            return redirect('expenses')
-        else:
-            messages.error(request, 'Please correct the errors in the form.')
+        search_str = json.loads(request.body).get('searchText')
+        expenses = Expense.objects.filter(
+            amount__istartswith=search_str, user=request.user) | Expense.objects.filter(
+            date_of_expense__istartswith=search_str, user=request.user) | Expense.objects.filter(
+            description__icontains=search_str, user=request.user) | Expense.objects.filter(
+            category__icontains=search_str, user=request.user)
+        data = expenses.values()
+        return JsonResponse(list(data), safe=False)
+    
+def preference(request):
+    currency_data = []
+    file_path = os.path.join(settings.BASE_DIR, 'currencies.json')
+
+    with open(file_path, 'r') as json_file:
+        data = json.load(json_file)
+        for k, v in data.items():
+            currency_data.append({'name': k, 'value': v})
+
+    exists = UserPreference.objects.filter(user=request.user).exists()
+    user_preferences = None
+    if exists:
+        user_preferences = UserPreference.objects.get(user=request.user)
+    if request.method == 'GET':
+
+        return render(request, 'web_static/preference.html', {'currencies': currency_data,
+                                                          'user_preferences': user_preferences})
     else:
-        form = ExpenseForm(instance=expense)
 
-    context = {
-        'form': form,
-        'expense': expense,
-        'categories': categories
-    }
-
-    return render(request, 'web_static/edit-expense.html', context)
+        currency = request.POST['currency']
+        if exists:
+            user_preferences.currency = currency
+            user_preferences.save()
+        else:
+            UserPreference.objects.create(user=request.user, currency=currency)
+        messages.success(request, 'Changes saved')
+        return render(request, 'web_static/preference.html', {'currencies': currency_data,
+                                                              'user_preferences': user_preferences})

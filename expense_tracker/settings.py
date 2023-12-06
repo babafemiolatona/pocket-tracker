@@ -33,7 +33,6 @@ ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="localhost", cast=Csv())
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -42,6 +41,9 @@ INSTALLED_APPS = [
     'tracker',
     'users',
     'bootstrap4',
+    'crispy_forms',
+    'crispy_bootstrap4',
+    'django.contrib.admin',
 ]
 
 MIDDLEWARE = [
@@ -124,7 +126,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = 'web_static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'web_static'),
@@ -134,3 +136,20 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+APPEND_SLASH = False
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+LOGIN_URL = 'users:login'
+
+LOGIN_REDIRECT_URL = 'tracker:expenses'
+
+#SMTP CONFIGURATION
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = config("EMAIL_USER") # gmail address
+EMAIL_HOST_PASSWORD = config("EMAIL_PASSWORD") # App password generated from gmail
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
