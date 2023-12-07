@@ -1,22 +1,28 @@
-{% extends 'web_static/base.html' %}
+{% extends 'web_static/base_auth.html' %}
 {% load crispy_forms_tags %}
 
 {% block content %}
     <div class="content-section">
-        <form method="POST">
+        <form method="POST" class="my-login-form">
             {% csrf_token %}
             <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Log In</legend>
+                <legend class="border-bottom mb-4">Log in to your account</legend>
                 {{ form|crispy }}
             </fieldset>
+            <style>
+                input[type="text"], input[type="password"] {
+                    width: 50%;
+                }
+            </style>
             <div class="form-group">
-                <button class="btn btn-outline-info" type="submit">Login</button>
+                <button class="btn btn-primary" type="submit">Login</button>
             </div>
         </form>
         <div class="border-top pt-3">
-            <small class="text-muted">
-                Need An Account? <a class="ml-2" href="{% url 'users:register' %}">Sign Up Now</a>
-            </small>
+            Need an Account? <a class="ml-2" href="{% url 'users:register' %}">Sign Up Now</a>
+        </div>
+        <div>
+            Forgot Password? <a class="ml-2" href="{% url 'users:password_reset' %}">Reset Password</a>
         </div>
     </div>
 {% endblock %}
