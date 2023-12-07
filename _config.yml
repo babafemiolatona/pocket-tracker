@@ -1,5 +1,5 @@
 # _config.yml for Expense Tracker
 
-title: "Expense Tracker"
+title: "PocketTracker"
 description: "Track and manage your expenses with this simple tracker."
 theme: jekyll-theme-minimal
