@@ -3,17 +3,22 @@
 
 {% block content %}
     <div class="content-section">
+        {% if messages %}
+            <div class="alert alert-success">
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
         <form method="POST" class="my-login-form">
             {% csrf_token %}
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Log in to your account</legend>
                 {{ form|crispy }}
             </fieldset>
-            <style>
-                input[type="text"], input[type="password"] {
-                    width: 50%;
-                }
-            </style>
             <div class="form-group">
                 <button class="btn btn-primary" type="submit">Login</button>
             </div>
