@@ -155,3 +155,7 @@ EMAIL_HOST_USER = config("EMAIL_HOST_USER") # gmail address
 EMAIL_HOST_PASSWORD = config("EMAIL_PASSWORD") # App password generated from gmail
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
+
+import mimetypes
+
+mimetypes.add_type("text/html", ".html", True)
