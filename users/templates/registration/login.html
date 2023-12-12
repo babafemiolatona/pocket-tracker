@@ -2,38 +2,52 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-    <div class="content-section">
-        {% if messages %}
-            <div class="alert alert-success">
-                <ul class="messages">
-                    {% for message in messages %}
-                        <li>{{ message }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endif %}
+<div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+        <div class="card mt-5">
+            <div class="card-body">
+                <div class="card-title py-3">
+                    <fieldset class="form-group">
+                        <legend class="border-bottom mb-0">Log in to your account</legend>
+                    </fieldset>
+                </div>
 
-        <form method="POST" class="my-login-form">
-            {% csrf_token %}
-            <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Log in to your account</legend>
-                {{ form|crispy }}
-            </fieldset>
-            <div class="form-group">
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me">
-                    <label class="form-check-label" for="remember_me">Remember me</label>
+                {% if messages %}
+                    <div class="alert alert-success">
+                        <ul class="messages">
+                            {% for message in messages %}
+                                <li>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <form method="POST" class="my-login-form">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me">
+                            <label class="form-check-label" for="remember_me">Remember me</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <button class="btn btn-primary" type="submit">Login</button>
+                    </div>
+                </form>
+
+                <div class="border-top pt-3">
+                    Need an Account? <a class="ml-2" href="{% url 'users:register' %}">Sign Up Now</a>
+                </div>
+
+                <div>
+                    Forgot Password? <a class="ml-2" href="{% url 'users:password_reset' %}">Reset Password</a>
                 </div>
             </div>
-            <div class="form-group">
-                <button class="btn btn-primary" type="submit">Login</button>
-            </div>
-        </form>
-        <div class="border-top pt-3">
-            Need an Account? <a class="ml-2" href="{% url 'users:register' %}">Sign Up Now</a>
-        </div>
-        <div>
-            Forgot Password? <a class="ml-2" href="{% url 'users:password_reset' %}">Reset Password</a>
         </div>
     </div>
+</div>
 {% endblock %}
