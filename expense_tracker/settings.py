@@ -158,4 +158,4 @@ EMAIL_USE_SSL = True
 
 import mimetypes
 
-mimetypes.add_type("text/html", ".html", True)
+mimetypes.add_type("text/javascript", ".js", True)
