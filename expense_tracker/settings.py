@@ -156,6 +156,6 @@ EMAIL_HOST_PASSWORD = config("EMAIL_PASSWORD") # App password generated from gma
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 
-import mimetypes
+# import mimetypes
 
-mimetypes.add_type("text/javascript", ".js", True)
+# mimetypes.add_type("text/javascript", ".js", True)
