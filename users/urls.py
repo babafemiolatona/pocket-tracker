@@ -8,8 +8,8 @@ from django.urls import reverse_lazy
 app_name = 'users'
 
 urlpatterns = [
-    path('login', auth_views.LoginView.as_view(template_name = 'registration/login.html'), name = 'login'),
-    path('register', views.register, name = 'register'),
+    path('auth/login', auth_views.LoginView.as_view(template_name = 'registration/login.html'), name = 'login'),
+    path('auth/register', views.register, name = 'register'),
     path('logout', LogoutView.as_view(), name = 'logout'),
     path('profile', views.profile, name = 'profile'),
     path('password_reset/',
