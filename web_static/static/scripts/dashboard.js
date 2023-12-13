@@ -20,7 +20,7 @@ const renderExpenseChart = (data, labels, type, title) => {
             data: {
                 labels: labels,
                 datasets: [{
-                    label: "This month's expenses",
+                    label: "Expenses for the last 1 month(s)",
                     data: data,
                     backgroundColor: [
                         "rgba(255, 99, 132, 0.2)",
@@ -54,7 +54,7 @@ const renderExpenseChart = (data, labels, type, title) => {
             data: {
                 labels: labels,
                 datasets: [{
-                    label: "This month's expenses",
+                    label: "Expenses for the last 1 month(s)",
                     data: data,
                     backgroundColor: [
                         "rgba(255, 99, 132, 0.2)",
