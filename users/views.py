@@ -4,6 +4,7 @@ from django.contrib import auth
 from django.contrib.auth.views import LogoutView
 from .forms import UserRegisterForm, UserUpdateForm
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 
 def register(request):
@@ -28,6 +29,7 @@ class LogoutView(LogoutView):
         auth.logout(request)
         return render(request, self.template_name)
 
+@login_required(login_url='users:login')
 def profile(request):
     if request.method == 'POST':
         u_form = UserUpdateForm(request.POST, instance=request.user)

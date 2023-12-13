@@ -1,11 +1,9 @@
-from django.shortcuts import render, redirect
-from django.views import View
+from django.shortcuts import render
 from django.contrib import messages
-from .models import Category, Expense, UserPreference
+from .models import Expense, UserPreference
 from django.views.generic import ListView, UpdateView, DeleteView, CreateView
 from django.core.paginator import Paginator
 from .forms import ExpenseForm
-from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 import json
 from django.http import JsonResponse
@@ -13,6 +11,9 @@ from datetime import date, timedelta
 from django.conf import settings
 import os
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
+from datetime import datetime
+from .forms import ExpenseForm
 
 
 class ExpenseListView(LoginRequiredMixin, ListView):
@@ -46,6 +47,7 @@ class ExpenseListView(LoginRequiredMixin, ListView):
         context['currency'] = currency
         return context
 
+
 class CreateExpenseView(LoginRequiredMixin, CreateView):
     model = Expense
     template_name = 'web_static/create_expense.html'
@@ -59,6 +61,7 @@ class CreateExpenseView(LoginRequiredMixin, CreateView):
         expense.save()
         messages.success(self.request, 'Expense saved successfully.')
         return super().form_valid(form)
+
 
 class ExpenseUpdateView(LoginRequiredMixin, UpdateView):
     model = Expense
@@ -88,7 +91,9 @@ class ExpenseDeleteView(LoginRequiredMixin, DeleteView):
     def form_valid(self, form):
         messages.success(self.request, 'Expense deleted successfully.')
         return super().form_valid(form)
-        
+
+
+@login_required(login_url='users:login')
 def expense_category_summary(request):
     todays_date = date.today()
     one_month_ago = todays_date - timedelta(days=30)
@@ -110,9 +115,12 @@ def expense_category_summary(request):
     return JsonResponse({'expense_category_data': finalrep}, safe=False)
 
 
+@login_required(login_url='users:login')
 def stats_view(request):
     return render(request, 'web_static/stats.html')
 
+
+@login_required(login_url='users:login')
 def search_expenses(request):
     if request.method == 'POST':
         search_str = json.loads(request.body).get('searchText')
@@ -123,7 +131,9 @@ def search_expenses(request):
             category__icontains=search_str, user=request.user)
         data = expenses.values()
         return JsonResponse(list(data), safe=False)
-    
+
+
+@login_required(login_url='users:login')
 def preference(request):
     currency_data = []
     file_path = os.path.join(settings.BASE_DIR, 'currencies.json')
@@ -152,3 +162,54 @@ def preference(request):
         messages.success(request, 'Changes saved')
         return render(request, 'web_static/preference.html', {'currencies': currency_data,
                                                               'user_preferences': user_preferences})
+
+
+@login_required(login_url='users:login')
+def dashboard(request):
+    """The view of the main page."""
+    # Retrieve user's currency preference
+    try:
+        currency = UserPreference.objects.get(user=request.user).currency
+    except UserPreference.DoesNotExist:
+        currency = None
+
+    expenses = Expense.objects.filter(user=request.user)
+    expenses = expenses.order_by("-date_of_expense")
+
+    # Expenses this year
+    expenses_this_year = expenses.filter(
+        date_of_expense__year=datetime.now().year
+    )
+    total_this_year = sum(expense.amount for expense in expenses_this_year)
+
+    # Expenses this month
+    expenses_this_month = expenses.filter(
+        date_of_expense__month=datetime.now().month
+    )
+    total_this_month = sum(expense.amount for expense in expenses_this_month)
+
+    spent_month_count = expenses_this_month.count()
+    spent_year_count = expenses_this_year.count()
+
+    expense_short_form = ExpenseForm()
+
+    # Quick expense addition
+    if request.method == "POST":
+        expense_short_form = ExpenseForm(request.POST)
+        if expense_short_form.is_valid():
+            expense = expense_short_form.save(commit=False)
+            expense.user = request.user
+            expense.save()
+
+    context = {
+        "expenses": expenses,
+        "expenses_this_year": expenses_this_year,
+        "expenses_this_month": expenses_this_month,
+        "expense_short_form": expense_short_form,
+        "total_this_year": total_this_year,
+        "total_this_month": total_this_month,
+        "currency": currency,
+        "spent_month_count": spent_month_count,
+        "spent_year_count": spent_year_count,
+    }
+    return render(request, "web_static/dashboard.html", context)

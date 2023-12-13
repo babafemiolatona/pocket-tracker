@@ -1,0 +1,138 @@
+{% extends "web_static/base.html" %}
+{% load static %}
+
+{% block content %}
+    {% include "partials/_sidebar.html" %}
+
+    <div class="main-content" id="panel">
+        <div class="header pb-6">
+            <div class="mr-5 ml-5">
+                <div class="mr-5 ml-5">
+                    {% include "partials/_messages.html" %}
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="header-body">
+                    <div class="row align-items-center py-4">
+                        <div class="col-lg-6 col-7">
+                            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                                <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                                    <li class="breadcrumb-item"><a href="{% url 'tracker:dashboard' %}">Dashboard</a></li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card card-stats bg-primary">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col">
+                                            <h5 class="card-title text-uppercase text-muted mb-0">This Month</h5>
+                                            <span class="h2 font-weight-bold mb-0 text-white">{{total_this_month}}</span>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="icon icon-shape bg-gradient-green text-white rounded-circle shadow">
+                                                <i class="ni ni-money-coins"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p class="mt-3 mb-0 text-sm">
+                                        <span class="text-nowrap mr-2" style="font-size: 15px;">Number of Expenses: </span>
+                                        <span class="text-danger" style="font-size: 15px;">{{spent_month_count}}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card card-stats bg-info">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col">
+                                            <h5 class="card-title text-uppercase text-muted mb-0">This Year</h5>
+                                            <span class="h2 font-weight-bold mb-0 text-white">{{total_this_year}}</span>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="icon icon-shape bg-gradient-info text-white rounded-circle shadow">
+                                                <i class="ni ni-chart-bar-32"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p class="mt-3 mb-0 text-sm">
+                                        <span class="text-nowrap mr-2" style="font-size: 15px;">Number of Expenses: </span>
+                                        <span class="text-danger" style="font-size: 15px;">{{spent_year_count}}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid mt-4">
+            <div class="col-lg-6 col-5">
+                <button id="line" class="btn btn-sm btn-neutral">Line Graph</button>
+                <button id="pie" class="btn btn-sm btn-neutral">Pie Chart</button>
+            </div>
+            <div class="row mt-2">
+                <div class="col-9">
+                    <div class="card bg-default">
+                        <div class="card-header bg-transparent">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <h5 class="h3 text-white mb-0 text-center">This Month's Expense</h5>
+                                    <div class="chart-container mx-auto" style="position: relative; height:500px; width:450px">
+                                        <canvas id="myChart" class="chart-canvas chartjs-render-monitor" width="450" height="500"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-9">
+                    <div class="card">
+                        <div class="card-header border-0">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <h3 class="mb-0 text-center">Recent Expenses</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table align-items-center table-flush">
+                                <thead class="thead-light">
+                                    <tr>
+                                        {% if expenses %}
+                                            <th scope="col">Amount ({{currency}})</th>
+                                            <th scope="col">Category</th>
+                                            <th scope="col">Description</th>
+                                            <th scope="col">Date of Expense</th>
+                                        {% else %}
+                                            <p class="text-center">NO NEW DATA</p>
+                                        {% endif %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if expenses %}
+                                        {% for expense in expenses %}
+                                            <tr>
+                                                <th scope="row">{{expense.amount}}</th>
+                                                <td><i class="fas fa-arrow-down text-warning mr-3"></i> {{expense.category}}</td>
+                                                <td>{{ expense.description }}</td>
+                                                <td>{{expense.date_of_expense}}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script src="{% static 'static/scripts/dashboard.js' %}"></script>
+        </div>
+    </div>
+{% endblock %}
