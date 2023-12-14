@@ -110,7 +110,7 @@ I would like to express my gratitude to the following resources that have been i
 ### Resources
 
 1. [Django Documentation](https://docs.djangoproject.com/en/5.0/)
-2. [ChatGPT](chat.openai.com)
+2. [ChatGPT](https://chat.openai.com)
 3. [Stack Overflow](https://stackoverflow.com/)
 
 Also hat tip to anyone whose code was used.
