@@ -42,11 +42,11 @@ cd pocket-tracker
 ```
 python -m venv venv
 ```
-Windows
+   Windows
 ```
 venv\scripts\activate
 ```
-Linux/Ubuntu
+   Linux/Ubuntu
 ```
 source venv/bin/activate
 ```
