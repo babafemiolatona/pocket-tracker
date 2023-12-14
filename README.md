@@ -41,9 +41,11 @@ cd pocket-tracker
 
 ```
 python -m venv venv
-   
+```
+```
 venv\scripts\activate(Windows)
-
+```
+```
 source venv/bin/activate(Linux/Ubuntu)
 ```
 5. Install Dependencies
