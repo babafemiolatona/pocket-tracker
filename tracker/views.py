@@ -25,7 +25,8 @@ class ExpenseListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return Expense.objects.filter(user=self.request.user).order_by('-date_of_expense')
+            return Expense.objects.filter(
+                user=self.request.user).order_by('-date_of_expense')
         else:
             return Expense.objects.none()
 
@@ -37,7 +38,8 @@ class ExpenseListView(LoginRequiredMixin, ListView):
 
         if self.request.user.is_authenticated:
             try:
-                currency = UserPreference.objects.get(user=self.request.user).currency
+                currency = UserPreference.objects.get(
+                    user=self.request.user).currency
             except UserPreference.DoesNotExist:
                 currency = None
         else:
@@ -76,12 +78,12 @@ class ExpenseUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse_lazy('tracker:expenses')
-    
+
     def form_valid(self, form):
         messages.success(self.request, 'Expense updated successfully.')
         return super().form_valid(form)
 
-    
+
 class ExpenseDeleteView(LoginRequiredMixin, DeleteView):
     model = Expense
     template_name = 'web_static/expense_delete.html'
@@ -97,10 +99,10 @@ class ExpenseDeleteView(LoginRequiredMixin, DeleteView):
 def expense_category_summary(request):
     todays_date = date.today()
     one_month_ago = todays_date - timedelta(days=30)
-    
+
     expenses = Expense.objects.filter(user=request.user,
-                                      date_of_expense__gte=one_month_ago, date_of_expense__lte=todays_date)
-    
+                                      date_of_expense__gte=one_month_ago,
+                                      date_of_expense__lte=todays_date)
     finalrep = {}
 
     def get_expense_category_amount(category):
@@ -124,11 +126,19 @@ def stats_view(request):
 def search_expenses(request):
     if request.method == 'POST':
         search_str = json.loads(request.body).get('searchText')
-        expenses = Expense.objects.filter(
-            amount__istartswith=search_str, user=request.user) | Expense.objects.filter(
-            date_of_expense__istartswith=search_str, user=request.user) | Expense.objects.filter(
-            description__icontains=search_str, user=request.user) | Expense.objects.filter(
-            category__icontains=search_str, user=request.user)
+        expenses = (Expense.objects.filter(
+            amount__istartswith=search_str,
+            user=request.user
+        ) | Expense.objects.filter(
+            date_of_expense__istartswith=search_str,
+            user=request.user
+        ) | Expense.objects.filter(
+            description__icontains=search_str,
+            user=request.user
+        ) | Expense.objects.filter(
+            category__icontains=search_str,
+            user=request.user
+        ))
         data = expenses.values()
         return JsonResponse(list(data), safe=False)
 
@@ -149,8 +159,11 @@ def preference(request):
         user_preferences = UserPreference.objects.get(user=request.user)
     if request.method == 'GET':
 
-        return render(request, 'web_static/preference.html', {'currencies': currency_data,
-                                                          'user_preferences': user_preferences})
+        return render(request, 'web_static/preference.html',
+                      {
+                        'currencies': currency_data,
+                        'user_preferences': user_preferences
+                      })
     else:
 
         currency = request.POST['currency']
@@ -160,8 +173,11 @@ def preference(request):
         else:
             UserPreference.objects.create(user=request.user, currency=currency)
         messages.success(request, 'Changes saved')
-        return render(request, 'web_static/preference.html', {'currencies': currency_data,
-                                                              'user_preferences': user_preferences})
+        return render(request, 'web_static/preference.html',
+                      {
+                        'currencies': currency_data,
+                        'user_preferences': user_preferences
+                      })
 
 
 @login_required(login_url='users:login')

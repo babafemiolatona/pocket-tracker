@@ -16,10 +16,12 @@ def register(request):
         if form.is_valid():
             new_user = form.save()
             login(request, new_user)
-            messages.success(request, f'Your account has been created. You can now login!')
+            messages.success(request, f'Your account has been created. '
+                                      'You can now login!')
             return redirect('users:login')
     context = {'form': form}
     return render(request, 'registration/register.html', context)
+
 
 class LogoutView(LogoutView):
     template_name = 'registration/logout.html'
@@ -29,6 +31,7 @@ class LogoutView(LogoutView):
         auth.logout(request)
         return render(request, self.template_name)
 
+
 @login_required(login_url='users:login')
 def profile(request):
     if request.method == 'POST':
@@ -36,14 +39,14 @@ def profile(request):
 
         if u_form.is_valid():
             u_form.save()
-            messages.success(request, f'Your profile has been updated!') 
+            messages.success(request, f'Your profile has been updated!')
             return redirect('tracker:expenses')
 
     else:
         u_form = UserUpdateForm(instance=request.user)
 
     context = {
-        'u_form': u_form,    
+        'u_form': u_form,
     }
 
     return render(request, 'registration/profile.html', context)

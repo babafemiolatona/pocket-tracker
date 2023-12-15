@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 
+
 class Category(models.Model):
     name = models.CharField(max_length=100, default=None)
 
@@ -10,7 +11,8 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
-    
+
+
 class Expense(models.Model):
     CATEGORY = [
         ('', 'Select category'),
@@ -35,10 +37,11 @@ class Expense(models.Model):
 
     def __str__(self):
         return self.category
-    
+
+
 class UserPreference(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     currency = models.CharField(max_length=255, default=None)
-    
+
     def __str__(self):
         return str(self.user) + 's' + ' preferences'
